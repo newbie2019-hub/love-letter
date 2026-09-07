@@ -1,0 +1,363 @@
+/* ── tokens ─────────────────────────────────────────────────── */
+:root {
+  --paper: #fffcf6;
+  --ink: #4b4139;
+  --ink-soft: #8e8073;
+  --rose: #b97f86;
+  --fold: 120, 92, 66;
+
+  /* one knob controls the whole letter's size; everything else derives.
+     svh (not vh) so a phone's collapsing toolbar can't crop the letter. */
+  --w: min(430px, 88vw, max(330px, 56vh));
+  --w: min(430px, 88vw, max(330px, 56svh));
+  --ratio: 1.42;
+  --type: 24;
+  /* --measured is written by App.jsx from the real content height; the
+     aspect-ratio term is the floor, so a short letter still looks like a page */
+  --measured: 0px;
+  --h: max(calc(var(--w) * var(--ratio)), var(--measured));
+  --panel: calc(var(--h) / 3);
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Caveat', 'Segoe Script', cursive;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── pastel room ────────────────────────────────────────────── */
+.app {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 4vh 4vw;
+  overflow-x: hidden;
+  background:
+    radial-gradient(60% 50% at 12% 6%, rgba(238, 176, 199, 0.55), rgba(238, 176, 199, 0) 62%),
+    radial-gradient(56% 48% at 90% 14%, rgba(166, 205, 187, 0.48), rgba(166, 205, 187, 0) 60%),
+    radial-gradient(72% 58% at 84% 98%, rgba(235, 194, 143, 0.45), rgba(235, 194, 143, 0) 66%),
+    radial-gradient(64% 54% at 6% 96%, rgba(195, 181, 223, 0.4), rgba(195, 181, 223, 0) 64%),
+    #e8dad4;
+}
+
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+.float {
+  margin: auto;
+  animation: bob 5s ease-in-out infinite;
+}
+.float.is-open { animation: none; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── stage ──────────────────────────────────────────────────── */
+.stage {
+  position: relative;
+  width: var(--w);
+  height: var(--panel);
+  transition: height 1.1s cubic-bezier(0.25, 0.85, 0.3, 1);
+  display: grid;
+  place-items: center;
+  perspective: 2200px;
+  perspective-origin: 50% 46%;
+}
+.float.is-open .stage { height: var(--h); }
+
+/* one shadow box per panel, each growing out of its own crease, so the
+   shadow tracks the paper instead of floating below it mid-unfold */
+.glow {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateZ(-1px);
+  border-radius: 2px;
+  box-shadow:
+    0 30px 55px -20px rgba(94, 60, 46, 0.45),
+    0 10px 22px -12px rgba(94, 60, 46, 0.35),
+    0 2px 5px rgba(94, 60, 46, 0.12);
+}
+.glow--top { bottom: 100%; transform-origin: 50% 100%; transform: translateZ(-1px) scaleY(0); }
+.glow--mid { top: 0; }
+.glow--bottom { top: 100%; transform-origin: 50% 0%; transform: translateZ(-1px) scaleY(0); }
+
+/* the middle third is the anchor; the other two hang off it */
+.letter {
+  position: relative;
+  width: var(--w);
+  height: var(--panel);
+  transform: rotateX(9deg) scale(1.03);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.hinge {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--panel);
+  transform-style: preserve-3d;
+}
+/* the 1–2px lift is paper thickness: it also keeps the folded
+   panels from z-fighting when they land on top of each other */
+.hinge--top { bottom: 100%; transform: translateZ(2px); }
+.hinge--bottom { top: 100%; transform: translateZ(1px); }
+
+.panel {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.panel--top { transform-origin: 50% 100%; transform: rotateX(-180deg); }
+.panel--bottom { transform-origin: 50% 0%; transform: rotateX(180deg); }
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #fffdf8;
+}
+.face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.05;
+  pointer-events: none;
+}
+.face--back { transform: rotateX(180deg); }
+
+/* crease shading — strongest at the folds, mostly fades once flat */
+.shade { position: absolute; inset: 0; pointer-events: none; }
+.shade--top {
+  background: linear-gradient(to bottom, rgba(var(--fold), 0.1), rgba(var(--fold), 0) 30%,
+    rgba(var(--fold), 0) 70%, rgba(var(--fold), 0.22));
+}
+.shade--mid {
+  background: linear-gradient(to bottom, rgba(var(--fold), 0.2), rgba(var(--fold), 0) 30%,
+    rgba(var(--fold), 0) 70%, rgba(var(--fold), 0.2));
+}
+.shade--bottom {
+  background: linear-gradient(to bottom, rgba(var(--fold), 0.22), rgba(var(--fold), 0) 30%,
+    rgba(var(--fold), 0) 70%, rgba(var(--fold), 0.1));
+}
+
+/* ── the page itself ────────────────────────────────────────── */
+.sheet {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--h);
+  padding: calc(var(--w) * 0.12) calc(var(--w) * 0.095);
+  display: flex;
+  flex-direction: column;
+  font-size: calc(var(--w) / var(--type));
+  line-height: 1.6;
+  user-select: none;
+  background: linear-gradient(to bottom, #fffffe, #fffcf6 60%, #fdf6e9 100%);
+}
+.sheet > * { flex: none; margin: 0; }
+
+.sheet__date {
+  font-size: 0.8em;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin-bottom: 0.6em;
+}
+
+.sheet__greeting {
+  font-weight: 600;
+  font-size: 2.15em;
+  line-height: 1;
+  color: var(--rose);
+  margin-bottom: 0.25em;
+}
+
+.sheet__p {
+  font-size: 1.12em;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 0.7em;
+  text-wrap: pretty;
+}
+
+.photos {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  margin: 0.2em 0 0.95em;
+}
+.photo {
+  width: 46%;
+  margin: 0;
+  padding: 0.4em 0.4em 0.5em;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 6px 14px -9px rgba(90, 64, 54, 0.65);
+}
+.photo:first-child { transform: rotate(-2.4deg); }
+.photo:last-child { transform: rotate(2deg); }
+.photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 1px;
+}
+.photo figcaption {
+  font-size: 0.95em;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--ink-soft);
+  margin-top: 0.25em;
+}
+
+.sheet__rule {
+  width: calc(var(--w) * 0.16);
+  height: 1px;
+  margin: auto auto 1.1em;
+  background: repeating-linear-gradient(to right, rgba(var(--fold), 0.35) 0 5px, transparent 5px 10px);
+}
+.sheet__closing {
+  font-size: 1em;
+  color: var(--ink-soft);
+  margin: 0 0 0.05em;
+}
+.sheet__sign {
+  font-size: 1.95em;
+  line-height: 1.05;
+  color: var(--rose);
+  margin: 0;
+}
+
+/* ── the outside of the folded packet ───────────────────────── */
+.cover {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #fffffd, #fbf4e8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  font-size: calc(var(--w) / var(--type));
+}
+.cover__heart { width: calc(var(--w) * 0.085); }
+.cover__note {
+  font-size: 1.6em;
+  line-height: 1;
+  color: var(--rose);
+  margin: 0;
+}
+.cover__rule {
+  width: calc(var(--w) * 0.18);
+  height: 1px;
+  background: repeating-linear-gradient(to right, rgba(var(--fold), 0.4) 0 5px, transparent 5px 10px);
+}
+
+/* ── stickers: their own layer above the paper, free to overhang ── */
+.stickers {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: calc(var(--panel) * -1);
+  height: var(--h);
+  transform: translateZ(10px);
+  pointer-events: none;
+}
+.sticker {
+  position: absolute;
+  opacity: 0;
+  filter: drop-shadow(0 3px 4px rgba(96, 72, 60, 0.3));
+}
+.sticker svg { display: block; width: 100%; height: auto; }
+
+/* ── chrome ─────────────────────────────────────────────────── */
+.hint span {
+  display: inline-block;
+  animation: blink 2.6s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.hint {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  top: calc(50% + var(--panel) / 2 + 1.1rem);
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.opener {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.opener:focus-visible { outline: 2px solid var(--rose); outline-offset: 6px; border-radius: 4px; }
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .float { animation: none; }
+  .stage { transition: none; }
+  .hint span { animation: none; }
+}
+
+/* ── phones, and any short viewport ─────────────────────────── */
+@media (max-width: 640px), (max-height: 560px) {
+  :root {
+    --w: min(430px, 90vw, max(330px, 58vh));
+    --w: min(430px, 90vw, max(330px, 58svh));
+    --ratio: 1.58;
+    --type: 22;
+  }
+  .app { padding: 2vh 2vw; }
+  .hint { font-size: 1rem; top: calc(50% + var(--panel) / 2 + 0.85rem); }
+}
+
+/* offscreen copy of the sheet at natural height, purely to measure it */
+.measure {
+  position: absolute;
+  top: 0;
+  left: -200vw;
+  width: var(--w);
+  visibility: hidden;
+  pointer-events: none;
+}
+.measure .sheet {
+  position: static;
+  height: auto;
+}
+
