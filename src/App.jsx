@@ -25,7 +25,6 @@ function Sheet({ i, measuring }) {
           {photos.map((p) => (
             <figure className="photo" key={p.src} data-fade>
               <img src={measuring ? undefined : asset(p.src)} alt={p.alt} draggable="false" style={{ objectPosition: p.pos }} />
-              <figcaption>{p.caption}</figcaption>
             </figure>
           ))}
         </div>

@@ -221,7 +221,7 @@ body {
 .photo {
   width: 46%;
   margin: 0;
-  padding: 0.4em 0.4em 0.5em;
+  padding: 0.4em 0.4em 1.35em;
   background: #fff;
   border-radius: 2px;
   box-shadow: 0 6px 14px -9px rgba(90, 64, 54, 0.65);
@@ -234,13 +234,6 @@ body {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 1px;
-}
-.photo figcaption {
-  font-size: 0.78em;
-  line-height: 1.25;
-  text-align: center;
-  color: var(--ink-soft);
-  margin-top: 0.25em;
 }
 
 .sheet__rule {
