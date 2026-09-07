@@ -30,6 +30,13 @@ body {
   font-family: 'Kalam', 'Segoe Script', cursive;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  background:
+    radial-gradient(60% 50% at 12% 6%, rgba(238, 176, 199, 0.55), rgba(238, 176, 199, 0) 62%),
+    radial-gradient(56% 48% at 90% 14%, rgba(166, 205, 187, 0.48), rgba(166, 205, 187, 0) 60%),
+    radial-gradient(72% 58% at 84% 98%, rgba(235, 194, 143, 0.45), rgba(235, 194, 143, 0) 66%),
+    radial-gradient(64% 54% at 6% 96%, rgba(195, 181, 223, 0.4), rgba(195, 181, 223, 0) 64%),
+    #e8dad4;
 }
 
 /* ── pastel room ────────────────────────────────────────────── */
@@ -41,12 +48,6 @@ body {
   padding: 4vh 4vw;
   overflow-x: hidden; /* fallback */
   overflow-x: clip;
-  background:
-    radial-gradient(60% 50% at 12% 6%, rgba(238, 176, 199, 0.55), rgba(238, 176, 199, 0) 62%),
-    radial-gradient(56% 48% at 90% 14%, rgba(166, 205, 187, 0.48), rgba(166, 205, 187, 0) 60%),
-    radial-gradient(72% 58% at 84% 98%, rgba(235, 194, 143, 0.45), rgba(235, 194, 143, 0) 66%),
-    radial-gradient(64% 54% at 6% 96%, rgba(195, 181, 223, 0.4), rgba(195, 181, 223, 0) 64%),
-    #e8dad4;
 }
 
 .app::before {
