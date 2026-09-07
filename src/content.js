@@ -16,7 +16,7 @@ export const letter = {
   greeting: 'Hi, Love.',
   paragraphs: [
     'Time really flies so fast. I can’t believe it’s been already 7 months. I still remember the first time we met, and how beautiful your eyes were when I first saw it. Happy 7th Monthsary, Love! I love you so much.',
-    'I know I don’t always say it, but I really appreciate you and everything you do for me. I love the handwritten letters you give me, the cute flowers you make, the time you spend with me, and even the little things like always bringing a handkerchief and fan whenever we go somewhere hot. I appreciate how you take care of me, check on me, remind me to get a haircut, help me choose clothes, remind me to trim my nails, and all the other things you do for me.',
+    'I know I don’t always say it, but I really appreciate you and everything you do for me. I love the handwritten letters you gave, the cute flowers you made, the time you spend with me, and even the little things like always bringing a handkerchief and fan whenever we go somewhere hot. I appreciate how you take care of me, check on me, remind me to get a haircut, help me choose clothes, remind me to trim my nails, and all the other things you do for me.',
     'I really appreciate having you in my life, Love. You make me feel cared for and loved, and I’m very grateful for you.',
     'You’re the person I’d look for in every room, the first person I want beside me in my future plans, travels, and adventures. You’re the person I want to marry someday and build a life with.',
     'And from a garden full of flowers, you’d still be the one I’d pick.',
