@@ -11,18 +11,20 @@ const reduced =
 
 /* The same full-height sheet lives in all three panels, shifted up by one
    panel each time, so the text and photos read as one continuous page. */
-function Sheet({ i }) {
+function Sheet({ i, measuring }) {
   return (
     <div className="sheet" style={{ top: `calc(var(--panel) * ${-i})` }} aria-hidden={i !== 0}>
-      <p className="sheet__date">{letter.date}</p>
-      <h1 className="sheet__greeting">{letter.greeting}</h1>
-      <p className="sheet__p">{letter.paragraphs[0]}</p>
+      <p className="sheet__date" data-fade>{letter.date}</p>
+      <h1 className="sheet__greeting" data-fade>{letter.greeting}</h1>
+      <p className="sheet__p" data-fade>
+        {letter.paragraphs[0]}
+      </p>
 
       {photos.length > 0 && (
         <div className="photos">
           {photos.map((p) => (
-            <figure className="photo" key={p.src}>
-              <img src={asset(p.src)} alt={p.alt} draggable="false" style={{ objectPosition: p.pos }} />
+            <figure className="photo" key={p.src} data-fade>
+              <img src={measuring ? undefined : asset(p.src)} alt={p.alt} draggable="false" style={{ objectPosition: p.pos }} />
               <figcaption>{p.caption}</figcaption>
             </figure>
           ))}
@@ -30,16 +32,16 @@ function Sheet({ i }) {
       )}
 
       {letter.paragraphs.slice(1).map((t, n) => (
-        <p className="sheet__p" key={n}>
+        <p className="sheet__p" key={n} data-fade>
           {t}
         </p>
       ))}
 
-      <span className="sheet__rule" />
+      <span className="sheet__rule" data-fade />
 
       <div className="sheet__sign-block">
-        <p className="sheet__closing">{letter.closing}</p>
-        <p className="sheet__sign">{letter.signature}</p>
+        <p className="sheet__closing" data-fade>{letter.closing}</p>
+        <p className="sheet__sign" data-fade>{letter.signature}</p>
       </div>
     </div>
   )
@@ -81,12 +83,21 @@ export default function App() {
     const el = measure.current
     const apply = () => {
       const h = Math.ceil(el.getBoundingClientRect().height / 3) * 3
-      if (h > 0) document.documentElement.style.setProperty('--measured', h + 'px')
+      if (h <= 0) return
+      const root = document.documentElement.style
+      root.setProperty('--measured', h + 'px')
+      // a long letter means a tall folded packet; shrink it just enough to
+      // stay fully on screen, so "tap to open" is never below the fold
+      root.setProperty('--fit', Math.min(1, (window.innerHeight - 28) / (h / 3)).toFixed(3))
     }
     apply()
     const ro = new ResizeObserver(apply)
     ro.observe(el)
-    return () => ro.disconnect()
+    window.addEventListener('resize', apply)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', apply)
+    }
   }, [])
 
   useLayoutEffect(() => {
@@ -110,6 +121,21 @@ export default function App() {
           0.55,
         )
         .to('.shade', { opacity: 0.26, duration: 0.9 }, 0.8)
+        .fromTo(
+          '.letter [data-fade]',
+          { autoAlpha: 0, y: 12 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.55,
+            ease: 'power2.out',
+            // position within its own sheet, so the same line in all three
+            // panel copies fades at the same moment
+            stagger: (i, el) =>
+              [...el.closest('.sheet').querySelectorAll('[data-fade]')].indexOf(el) * 0.085,
+          },
+          1.5,
+        )
         .fromTo(
           '.sticker',
           { autoAlpha: 0, scale: 0.3, rotation: (i) => ROTS[i] - 45 },
@@ -142,7 +168,7 @@ export default function App() {
   return (
     <div className="app" ref={root}>
       <div className="measure" ref={measure} aria-hidden="true">
-        <Sheet i={0} />
+        <Sheet i={0} measuring />
       </div>
 
       <div className={`float${open ? ' is-open' : ''}`}>

@@ -196,7 +196,7 @@ export const STICKERS = [
   { C: Lavender, x: 91, y: 10, s: 9, r: 18 },
   { C: Forget, x: -6, y: 26, s: 11, r: 12 },
   { C: Blossom, x: 91, y: 23, s: 10, r: 18 },
-  { C: Sprig, x: -6, y: 39, s: 12, r: -160 },
+  { C: Sprig, x: -6, y: 39, s: 12, r: -32 },
   { C: Cosmos, x: 91, y: 36, s: 10, r: -12 },
   { C: Berries, x: -5, y: 53, s: 11, r: -10 },
   { C: Daisy, x: 92, y: 49, s: 9, r: 26 },
@@ -208,18 +208,18 @@ export const STICKERS = [
   // ── bottom edge: same clusters, flipped. `edge: 'bottom'` means
   //    y is measured up from the bottom of the paper, so these sit
   //    on the edge whatever height the letter ends up ────────────
-  { C: Sprig, x: -3, y: -3, s: 13, r: 145, edge: 'bottom' },
-  { C: Sprig, x: 9, y: -3.5, s: 12, r: -155, edge: 'bottom' },
+  { C: Sprig, x: -3, y: -3, s: 13, r: -35, edge: 'bottom' },
+  { C: Sprig, x: 9, y: -3.5, s: 12, r: 26, edge: 'bottom' },
   { C: Daisy, x: -6, y: -2, s: 13, r: 18, edge: 'bottom' },
   { C: Blossom, x: 5, y: -1.5, s: 10, r: -20, edge: 'bottom' },
-  { C: Bud, x: 14, y: -2.5, s: 9, r: 200, edge: 'bottom' },
+  { C: Bud, x: 14, y: -2.5, s: 9, r: 30, edge: 'bottom' },
   { C: Cosmos, x: 1, y: 1.5, s: 8, r: -12, edge: 'bottom' },
 
-  { C: Sprig, x: 85, y: -3, s: 13, r: -150, edge: 'bottom' },
-  { C: Sprig, x: 73, y: -2.5, s: 11, r: 160, edge: 'bottom' },
+  { C: Sprig, x: 85, y: -3, s: 13, r: 22, edge: 'bottom' },
+  { C: Sprig, x: 73, y: -2.5, s: 11, r: -28, edge: 'bottom' },
   { C: Daisy, x: 89, y: -2, s: 12, r: -20, edge: 'bottom' },
   { C: Berries, x: 78, y: -1.5, s: 10, r: 14, edge: 'bottom' },
-  { C: Lavender, x: 95, y: -1, s: 8, r: 190, edge: 'bottom' },
+  { C: Lavender, x: 95, y: -1, s: 8, r: -18, edge: 'bottom' },
 
   { C: Cosmos, x: 45, y: -2, s: 8, r: -8, edge: 'bottom' },
 ]

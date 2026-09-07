@@ -25,11 +25,9 @@
 
 * { box-sizing: border-box; }
 
-html, body, #root { height: 100%; }
-
 body {
   margin: 0;
-  font-family: 'Caveat', 'Segoe Script', cursive;
+  font-family: 'Cedarville Cursive', 'Segoe Script', cursive;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -41,7 +39,8 @@ body {
   display: grid;
   place-items: center;
   padding: 4vh 4vw;
-  overflow-x: hidden;
+  overflow-x: hidden; /* fallback */
+  overflow-x: clip;
   background:
     radial-gradient(60% 50% at 12% 6%, rgba(238, 176, 199, 0.55), rgba(238, 176, 199, 0) 62%),
     radial-gradient(56% 48% at 90% 14%, rgba(166, 205, 187, 0.48), rgba(166, 205, 187, 0) 60%),
@@ -62,6 +61,13 @@ body {
 .float {
   margin: auto;
   animation: bob 5s ease-in-out infinite;
+  /* `scale` is its own property, so it composes with the bob transform
+     instead of replacing it — and it animates without any layout */
+  transform-origin: 50% 0%;
+  transition: scale 0.9s cubic-bezier(0.25, 0.85, 0.3, 1);
+}
+.float:not(.is-open) {
+  scale: var(--fit, 1);
 }
 .float.is-open { animation: none; }
 
@@ -75,7 +81,6 @@ body {
   position: relative;
   width: var(--w);
   height: var(--panel);
-  transition: height 1.1s cubic-bezier(0.25, 0.85, 0.3, 1);
   display: grid;
   place-items: center;
   perspective: 2200px;
@@ -127,6 +132,10 @@ body {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
+}
+.panel--top,
+.panel--bottom {
+  will-change: transform;
 }
 .panel--top { transform-origin: 50% 100%; transform: rotateX(-180deg); }
 .panel--bottom { transform-origin: 50% 0%; transform: rotateX(180deg); }
@@ -181,25 +190,23 @@ body {
 .sheet > * { flex: none; margin: 0; }
 
 .sheet__date {
-  font-size: 0.8em;
-  letter-spacing: 0.04em;
+  font-size: 1em;
+  letter-spacing: 0.02em;
   color: var(--ink-soft);
   margin-bottom: 0.6em;
 }
 
 .sheet__greeting {
-  font-weight: 600;
-  font-size: 2.15em;
-  line-height: 1;
+  font-size: 2.3em;
+  line-height: 1.15;
   color: var(--rose);
   margin-bottom: 0.25em;
 }
 
 .sheet__p {
-  font-size: 1.12em;
-  font-weight: 500;
-  line-height: 1.5;
-  margin-bottom: 0.7em;
+  font-size: 1.3em;
+  line-height: 1.62;
+  margin-bottom: 0.75em;
   text-wrap: pretty;
 }
 
@@ -217,8 +224,8 @@ body {
   border-radius: 2px;
   box-shadow: 0 6px 14px -9px rgba(90, 64, 54, 0.65);
 }
-.photo:first-child { transform: rotate(-2.4deg); }
-.photo:last-child { transform: rotate(2deg); }
+.photo:first-child { rotate: -2.4deg; }
+.photo:last-child { rotate: 2deg; }
 .photo img {
   display: block;
   width: 100%;
@@ -227,8 +234,8 @@ body {
   border-radius: 1px;
 }
 .photo figcaption {
-  font-size: 0.95em;
-  line-height: 1.15;
+  font-size: 1.05em;
+  line-height: 1.25;
   text-align: center;
   color: var(--ink-soft);
   margin-top: 0.25em;
@@ -241,13 +248,13 @@ body {
   background: repeating-linear-gradient(to right, rgba(var(--fold), 0.35) 0 5px, transparent 5px 10px);
 }
 .sheet__closing {
-  font-size: 1em;
+  font-size: 1.15em;
   color: var(--ink-soft);
   margin: 0 0 0.05em;
 }
 .sheet__sign {
-  font-size: 1.95em;
-  line-height: 1.05;
+  font-size: 2em;
+  line-height: 1.3;
   color: var(--rose);
   margin: 0;
 }
@@ -266,8 +273,8 @@ body {
 }
 .cover__heart { width: calc(var(--w) * 0.085); }
 .cover__note {
-  font-size: 1.6em;
-  line-height: 1;
+  font-size: 1.7em;
+  line-height: 1.25;
   color: var(--rose);
   margin: 0;
 }
@@ -290,7 +297,7 @@ body {
 .sticker {
   position: absolute;
   opacity: 0;
-  filter: drop-shadow(0 3px 4px rgba(96, 72, 60, 0.3));
+  filter: drop-shadow(0 2px 3px rgba(96, 72, 60, 0.32));
 }
 .sticker svg { display: block; width: 100%; height: auto; }
 
@@ -312,7 +319,7 @@ body {
   margin: 0;
   text-align: center;
   top: calc(50% + var(--panel) / 2 + 1.1rem);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--ink-soft);
   pointer-events: none;
 }
@@ -330,8 +337,7 @@ body {
 
 
 @media (prefers-reduced-motion: reduce) {
-  .float { animation: none; }
-  .stage { transition: none; }
+  .float { animation: none; transition: none; }
   .hint span { animation: none; }
 }
 
