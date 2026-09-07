@@ -118,7 +118,7 @@ export default function App() {
             scale: 1,
             rotation: (i) => ROTS[i],
             duration: 0.55,
-            stagger: 0.045,
+            stagger: { each: 0.022, from: 'random' },
             ease: 'back.out(2.4)',
           },
           1.35,
@@ -161,8 +161,16 @@ export default function App() {
             </div>
 
             <div className="stickers">
-              {STICKERS.map(({ C, x, y, s }, n) => (
-                <div className="sticker" key={n} style={{ left: `${x}%`, top: `${y}%`, width: `${s}%` }}>
+              {STICKERS.map(({ C, x, y, s, edge }, n) => (
+                <div
+                  className="sticker"
+                  key={n}
+                  style={{
+                    left: `${x}%`,
+                    [edge === 'bottom' ? 'bottom' : 'top']: `${y}%`,
+                    width: `${s}%`,
+                  }}
+                >
                   <C />
                 </div>
               ))}
